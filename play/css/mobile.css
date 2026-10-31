@@ -1,0 +1,121 @@
+/* ============================================================================
+   手机竖屏（触屏 + 宽度 ≤ 980px + 竖屏 → body.touchp，由 js/mobile.js 加；触屏横屏 → body.touchl）
+     body.m-watch / .m-draw / .m-practice   当前模式
+     body.sheet-md / .sheet-right           全屏面板：Markdown 文本框 / 右栏（大纲 · 统计）；#sheet-close 是共用的「返回」
+     body.rot-ok                            横屏下选择了「仍然横屏继续」
+     #menu-btn #menu                        ☰ 菜单（其余入口都收在这里）
+     #mob-actions                           底部一排大按钮：同级 / 子级 / 升级 / 编辑 / 删除 / 撤销（≥ 44px）
+   观看：整页上下滚动，图贴顶，解说在图下面，再往下是右栏的紧凑版。
+   我来画 / 练习：100dvh 一屏不滚动，上方图、下方属性条 + 大按钮；Markdown 和右栏收起，从 ☰ 全屏打开。
+   ============================================================================ */
+.pressed { filter: brightness(1.2); transform: scale(.97); }
+body.touch .help-touch { display: block; }
+body.touch .help-kbd { display: none; }
+body.touch .help-touch-text { display: block; }
+body.touch #dock-draw .howto.help-kbd { display: none; }
+
+body.touchp { -webkit-touch-callout: none; -webkit-user-select: none; user-select: none; -webkit-tap-highlight-color: transparent; touch-action: manipulation;
+  padding: env(safe-area-inset-top) env(safe-area-inset-right) 0 env(safe-area-inset-left); }
+body.touchp textarea, body.touchp input { -webkit-user-select: text; user-select: text; }
+
+/* ---- 头部压成一行：标题、模式标签、☰ ---- */
+body.touchp #topbar { height: 50px; gap: 6px; padding: 0 8px; box-sizing: border-box; }
+body.touchp .brand #app-name { font-size: 15px; }
+body.touchp .brand small, body.touchp .switch, body.touchp #help-btn, body.touchp #exit-btn { display: none; }
+body.touchp #modes { padding: 2px; gap: 1px; }
+body.touchp #modes button { padding: 6px 9px; font-size: 13px; min-height: 34px; }
+body.touchp #menu-btn { display: block; margin-left: auto; width: 44px; height: 44px; padding: 0; font-size: 20px; border-radius: 8px; }
+body.touchp #menu:not([hidden]), body.touchl #menu:not([hidden]) { display: grid; position: fixed; z-index: 90; right: 8px; top: calc(env(safe-area-inset-top) + 46px); min-width: 230px; max-width: calc(100vw - 16px);
+  background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 6px; gap: 2px; box-shadow: 0 8px 24px rgba(0,0,0,.35); }
+body.touchl #menu-btn { display: block; margin-left: auto; width: 44px; height: 44px; padding: 0; font-size: 20px; }
+#menu button { font-size: 15px; text-align: left; padding: 10px 14px; min-height: 44px; border: none; background: transparent; border-radius: 8px; }
+#menu button:active { background: var(--panel2); }
+
+/* ---- 主区改成上下排 ---- */
+body.touchp #layout { display: flex; flex-direction: column; gap: 6px; padding: 6px 6px 0; }
+body.touchp #leftcol { flex: 1; min-height: 0; border-radius: 10px; }
+body.touchp #toolbar { flex-wrap: nowrap; overflow-x: auto; overflow-y: hidden; gap: 8px; padding: 5px 8px; scrollbar-width: none; }
+body.touchp #toolbar::-webkit-scrollbar { display: none; }
+body.touchp #toolbar .grp { flex: none; }
+body.touchp #toolbar label { font-size: 13px; }
+body.touchp #toolbar select, body.touchp #toolbar button { min-height: 36px; }
+body.touchp #grp-doc, body.touchp #grp-file, body.touchp #btn-md-toggle, body.touchp #btn-fit { display: none; }
+body.touchp.m-watch #grp-view { display: none; }
+body.touchp.m-watch #grp-sample label { display: inline-flex; }
+body.touchp:not(.m-watch) #grp-sample { display: none; }
+body.touchp #mdpane { display: none; }
+body.touchp #stage { touch-action: none; }
+body.touchp #zoom-badge { display: none; }
+body.touchp #footer { font-size: 10.5px; padding: 3px 8px; }
+
+/* ---- 观看：整页上下滚动 ---- */
+body.touchp.m-watch { height: auto; min-height: 100%; overflow-y: auto; overflow-x: hidden; }
+body.touchp.m-watch #layout { flex: none; overflow: visible; }
+body.touchp.m-watch #leftcol { flex: none; overflow: visible; }
+body.touchp.m-watch #workspace { height: 56vh; min-height: 330px; }
+body.touchp.m-watch #dock { max-height: none; }
+body.touchp.m-watch #rightcol { flex: none; min-height: 260px; max-height: 60vh; }
+body.touchp.m-watch #lock-badge { font-size: 11px; }
+body.touchp.m-watch #watch-caption { font-size: 13px; padding: 6px 10px; }
+body.touchp.m-watch #footer { padding-bottom: max(4px, env(safe-area-inset-bottom)); }
+
+/* ---- 我来画 / 练习：一屏不滚动 ---- */
+body.touchp:not(.m-watch) { height: 100dvh; overflow: hidden; }
+body.touchp:not(.m-watch) #layout { flex: 1; min-height: 0; padding-bottom: 0; }
+body.touchp:not(.m-watch) #rightcol, body.touchp:not(.m-watch) #footer { display: none; }
+body.touchp:not(.m-watch) #dock { max-height: 30%; padding: 6px 8px; }
+body.touchp:not(.m-watch) #dock-draw .props { gap: 4px 10px; font-size: 13px; }
+body.touchp:not(.m-watch) .props .plabel { font-size: 12px; }
+body.touchp:not(.m-watch) .swatch { width: 26px; height: 26px; }
+body.touchp:not(.m-watch) .ipick { width: 32px; height: 30px; }
+body.touchp:not(.m-watch) #btn-note, body.touchp:not(.m-watch) #btn-collapse, body.touchp:not(.m-watch) #color-clear, body.touchp:not(.m-watch) #icon-clear { min-height: 36px; }
+body.touchp:not(.m-watch) #tasks { columns: 1; font-size: 13.5px; }
+body.touchp #mob-actions { display: grid; grid-template-columns: repeat(6, 1fr); gap: 5px; padding: 5px 6px calc(env(safe-area-inset-bottom) + 5px); border-top: 1px solid var(--line); background: var(--panel2); flex: none; }
+body.touchp.m-watch #mob-actions { display: none; }
+#mob-actions button { min-height: 50px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 0; padding: 2px 0; font-size: 12px; line-height: 1.2; border-radius: 10px; touch-action: none; }
+#mob-actions button b { font-size: 18px; font-weight: normal; line-height: 1.1; }
+#mob-actions #mob-child { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
+#mob-actions #mob-delete { color: var(--danger); }
+
+/* ---- 编辑输入框：固定在键盘上方（js 用 visualViewport 定位） ---- */
+body.touchp #edit-box, body.touchl #edit-box { position: fixed; left: 0; right: 0; bottom: 0; top: auto; z-index: 120; min-width: 0; flex-direction: row; align-items: flex-end; gap: 6px; padding: 8px 8px calc(env(safe-area-inset-bottom) + 8px);
+  background: var(--panel); border-top: 1px solid var(--line); box-shadow: 0 -6px 18px rgba(0,0,0,.2); }
+body.touchp #edit-box[hidden], body.touchl #edit-box[hidden] { display: none; }
+body.touchp #edit-input, body.touchl #edit-input { flex: 1; font-size: 16px; min-height: 44px; box-shadow: none; }
+body.touchp #edit-box .edit-btns, body.touchl #edit-box .edit-btns { display: flex; }
+body.touchp #edit-box .edit-btns button, body.touchl #edit-box .edit-btns button { min-height: 44px; min-width: 56px; }
+body.touchp #findbar { right: 10px; }
+body.touchp #find-input { flex: 1; min-width: 0; width: auto; min-height: 40px; }
+
+/* ---- 全屏面板：「看 Markdown」「大纲 · 统计」，「返回」关闭 ---- */
+body.touchp.sheet-md #mdpane, body.touchp.sheet-right #rightcol { display: flex; position: fixed; z-index: 85; inset: 0; width: auto; border: none; border-radius: 0; background: var(--panel);
+  padding: calc(env(safe-area-inset-top) + 6px) 0 calc(env(safe-area-inset-bottom) + 72px); }
+body.touchp.sheet-md #md-text { font-size: 15px; }
+body.touchp.sheet-md #mdpane .mdhead { padding: 6px 10px; }
+body.touchp.sheet-md #md-collapse { display: none; }
+body.touchp.sheet-md #sheet-close, body.touchp.sheet-right #sheet-close { display: block; position: fixed; z-index: 86; left: 50%; transform: translateX(-50%);
+  bottom: calc(env(safe-area-inset-bottom) + 12px); min-width: 150px; min-height: 48px; padding: 0 26px; background: var(--accent); color: var(--accent-ink);
+  font-weight: bold; font-size: 16px; border-radius: 24px; box-shadow: 0 6px 18px rgba(0,0,0,.35); border: none; }
+body.touchp .tabs button { min-height: 40px; padding: 6px 12px; font-size: 14px; }
+body.touchp #outline .orow { min-height: 36px; font-size: 14px; }
+
+/* ---- 横屏手机：提示竖屏体验更佳 ---- */
+body.touchl:not(.m-watch):not(.rot-ok) #rotate-hint { display: grid; position: fixed; inset: 0; z-index: 95; place-items: center; text-align: center;
+  background: var(--bg); padding: 16px; line-height: 1.8; }
+#rotate-hint b { font-size: 20px; display: block; margin-bottom: 8px; color: var(--accent); }
+#rotate-hint button { margin-top: 14px; min-height: 44px; padding: 0 18px; border-radius: 10px; font-size: 15px; }
+body.touchl #topbar .switch, body.touchl #help-btn, body.touchl #exit-btn { display: none; }
+body.touchl #mdpane { display: none; }
+
+/* ---- 说明浮层：触屏下显示触屏图解，可上下滚动，「开始」固定在底部 ---- */
+:is(body.touchp, body.touchl) .dlg-mask { padding: 8px; align-items: stretch; }
+:is(body.touchp, body.touchl) .dlg.help { height: 100%; max-height: none; padding: 12px 12px calc(env(safe-area-inset-bottom) + 10px); }
+:is(body.touchp, body.touchl) .dlg.help h3 { font-size: 16px; }
+:is(body.touchp, body.touchl) .dlg.help .helpbody { -webkit-overflow-scrolling: touch; }
+:is(body.touchp, body.touchl) .help-btns { flex: none; }
+:is(body.touchp, body.touchl) .help-btns button { min-height: 48px; min-width: 160px; font-size: 16px; }
+body.touchp .helpgrid { grid-template-columns: 1fr; gap: 0; }
+body.touchp .helpgrid p, body.touchp .helpgrid li { font-size: 13px; }
+body.touchp .dlg { padding: 14px; }
+body.touchp .dlg-btns button { min-height: 44px; min-width: 80px; }
+body.touchp .dlg textarea { font-size: 16px; }

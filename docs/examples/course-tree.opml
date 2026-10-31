@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<opml version="2.0">
+  <head><title>机器学习与深度学习</title></head>
+  <body>
+    <outline text="机器学习与深度学习" _note="一门课的知识树：中心 → 板块 → 具体方法">
+      <outline text="数据">
+        <outline text="收集与清洗"/>
+        <outline text="特征工程"/>
+        <outline text="训练集 / 验证集 / 测试集" _note="验证集用来选模型，测试集只在最后用一次"/>
+      </outline>
+      <outline text="监督学习">
+        <outline text="线性回归"/>
+        <outline text="逻辑回归"/>
+        <outline text="决策树与随机森林"/>
+        <outline text="支持向量机"/>
+      </outline>
+      <outline text="无监督学习">
+        <outline text="聚类（K-means）"/>
+        <outline text="降维（PCA / t-SNE）"/>
+      </outline>
+      <outline text="深度学习">
+        <outline text="多层感知机"/>
+        <outline text="卷积网络（图像）"/>
+        <outline text="循环网络与 Transformer（序列）"/>
+      </outline>
+      <outline text="评估与部署">
+        <outline text="指标：准确率、召回率、F1"/>
+        <outline text="过拟合与正则化"/>
+        <outline text="模型上线与监控"/>
+      </outline>
+    </outline>
+  </body>
+</opml>

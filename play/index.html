@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="light dark">
+<title>键盘思维导图</title>
+<link rel="stylesheet" href="css/app.css">
+<link rel="stylesheet" href="css/mobile.css">
+</head>
+<body>
+
+<!-- ===================== 顶栏：标题 + 模式标签 + 右上角按钮 ===================== -->
+<header id="topbar">
+  <div class="brand"><span id="app-name">键盘思维导图</span><small id="app-tagline"></small></div>
+  <nav id="modes" role="tablist">
+    <button data-mode="watch" role="tab" title="示例地图自动逐层展开，配解说">观看</button>
+    <button data-mode="draw" role="tab" title="自己画：回车建同级、Tab 建子级，Markdown 与图实时互转">我来画</button>
+    <button data-mode="practice" role="tab" title="按任务清单练习，完成一项自动打勾">练习</button>
+  </nav>
+  <span class="spacer"></span>
+  <label class="switch" title="左右比例从约 55:45 调到约 70:30，方便投影"><input type="checkbox" id="bigscreen"> 大屏模式</label>
+  <button id="help-btn" class="icon" title="操作说明（H）">?</button>
+  <button id="exit-btn" class="exit" title="停止全部计算并关闭页面">退出</button>
+  <!-- 手机竖屏：其余入口收进 ☰ 菜单 -->
+  <button id="menu-btn" aria-label="菜单" aria-expanded="false" aria-controls="menu">☰</button>
+  <div id="menu" role="menu" hidden>
+    <button role="menuitem" id="menu-md">看 Markdown（改文字图跟着变）</button>
+    <button role="menuitem" id="menu-right">大纲 · 统计</button>
+    <div class="sep"></div>
+    <button role="menuitem" id="menu-new">新建导图</button>
+    <button role="menuitem" id="menu-open">打开文件（.md / .json / .opml / .mm）…</button>
+    <button role="menuitem" id="menu-dl-md">下载 .md</button>
+    <button role="menuitem" id="menu-dl-json">下载 .json</button>
+    <button role="menuitem" id="menu-png">导出 PNG</button>
+    <button role="menuitem" id="menu-fit">适应窗口</button>
+    <div class="sep"></div>
+    <button role="menuitem" id="menu-help">操作说明</button>
+    <button role="menuitem" id="menu-exit">退出</button>
+  </div>
+</header>
+
+<main id="layout">
+  <!-- ===================== 左栏：工具条 + （Markdown | 图） + 操作区 ===================== -->
+  <section id="leftcol">
+    <div id="toolbar">
+      <span class="grp" id="grp-doc">
+        <select id="doc-select" title="本机保存的导图（localStorage 自动保存）"></select>
+        <button class="mini" id="doc-new" title="新建一张空白导图">新建</button>
+        <button class="mini" id="doc-rename" title="改名（根节点文字就是标题）">改名</button>
+        <button class="mini" id="doc-delete" title="从本机删除这张导图">删除</button>
+      </span>
+      <span class="grp" id="grp-file">
+        <button class="mini" id="btn-open" title="打开 .md / .json / .opml / FreeMind .mm">打开文件</button>
+        <span class="dd">
+          <button class="mini" id="btn-download" title="下载">下载 ▾</button>
+          <div class="ddmenu">
+            <button id="dl-md">Markdown（.md）</button>
+            <button id="dl-json">JSON（.json）</button>
+            <button id="dl-opml">OPML（.opml）</button>
+            <button id="dl-mm">FreeMind（.mm）</button>
+            <div class="sep"></div>
+            <button id="dl-png">图片 PNG</button>
+            <button id="dl-svg">矢量图 SVG</button>
+          </div>
+        </span>
+      </span>
+      <span class="grp" id="grp-view">
+        <label>布局 <select id="layout-select"></select></label>
+        <label>连线 <select id="edge-select"><option value="curve">曲线</option><option value="elbow">折线</option></select></label>
+        <label>配色 <select id="theme-select"></select></label>
+        <button class="mini" id="btn-fit" title="适应窗口（Ctrl+0）">适应窗口</button>
+        <button class="mini" id="btn-md-toggle" title="显示 / 收起左侧 Markdown 文本框（Ctrl+M）">Markdown ◧</button>
+      </span>
+      <span class="spacer"></span>
+      <span class="grp" id="grp-sample">
+        <label>示例 <select id="sample-select"></select></label>
+        <button class="mini" id="btn-load-sample" title="把示例载入「我来画」（会另存为一张新导图）">载入示例</button>
+      </span>
+    </div>
+
+    <div id="workspace">
+      <div id="mdpane">
+        <div class="mdhead"><b>Markdown</b><span class="hint">`#` 层级，`- ` 列表，`&lt;!-- 备注 --&gt;`；改文字，图跟着变</span><span class="spacer"></span>
+          <button class="mini" id="md-collapse" title="收起">‹</button></div>
+        <textarea id="md-text" spellcheck="false" placeholder="# 中心主题&#10;## 分支&#10;- 子节点"></textarea>
+      </div>
+      <div id="stage">
+        <svg id="canvas" role="img" aria-label="思维导图画布" tabindex="0"></svg>
+        <div id="edit-box" hidden><textarea id="edit-input" rows="1" placeholder="节点文字（Enter 确认，Esc 取消，Tab 确认并建子级）"></textarea>
+          <div class="edit-btns"><button id="edit-ok" class="mini primary">确认</button><button id="edit-cancel" class="mini">取消</button></div></div>
+        <div id="findbar" hidden><input id="find-input" placeholder="查找节点文字（Enter 下一个，Esc 关闭）"><span id="find-count"></span>
+          <button class="mini" id="find-prev" title="上一个">↑</button><button class="mini" id="find-next" title="下一个">↓</button><button class="mini" id="find-close" title="关闭">×</button></div>
+        <div id="zoom-badge" title="滚轮缩放，空白处拖动平移">100%</div>
+        <div id="lock-badge">演示中：切到「我来画」或「练习」就能动手</div>
+        <div id="watch-caption"><b id="cap-title"></b><span id="cap-text"></span></div>
+      </div>
+    </div>
+
+    <!-- 手机竖屏的操作区（我来画 / 练习）：大按钮代替 Enter / Tab，触控区 ≥ 44px -->
+    <div id="mob-actions">
+      <button id="mob-sibling" title="新建同级（Enter）"><b>＋</b>同级</button>
+      <button id="mob-child" title="新建子级（Tab）"><b>⤷</b>子级</button>
+      <button id="mob-outdent" title="升一级（Shift+Tab）"><b>⤴</b>升级</button>
+      <button id="mob-edit" title="编辑文字（空格）"><b>✎</b>编辑</button>
+      <button id="mob-delete" title="删除（Delete）"><b>🗑</b>删除</button>
+      <button id="mob-undo" title="撤销（Ctrl+Z）"><b>↶</b>撤销</button>
+    </div>
+
+    <!-- 操作区（随模式变化） -->
+    <div id="dock">
+      <div id="dock-watch" class="dockpane">
+        <div class="playctl">
+          <button class="mini primary" id="pl-play" title="播放 / 暂停（空格）">⏸ 暂停</button>
+          <button class="mini" id="pl-step" title="暂停时展开下一个">⏭ 单步</button>
+          <button class="mini" id="pl-restart" title="从头再播一遍">⟲ 从头</button>
+          <span class="seg" id="speed-presets" title="展开速度"></span>
+          <span class="prog"><span id="pl-bar"></span></span>
+          <b id="pl-count">0 / 0</b>
+        </div>
+        <div class="howto">自动逐层展开示例地图，每一步配一句解说；顶部「示例」可以换另一张。想自己画，点「我来画」。</div>
+      </div>
+      <div id="dock-draw" class="dockpane">
+        <div class="props">
+          <span class="plabel">选中节点：</span><b id="sel-text">—</b>
+          <span class="grp"><span class="plabel">颜色</span><span id="color-swatches"></span><button class="mini" id="color-clear" title="恢复自动配色">自动</button></span>
+          <span class="grp"><span class="plabel">图标</span><span id="icon-picker"></span><button class="mini" id="icon-clear" title="去掉图标">无</button></span>
+          <span class="grp"><span class="plabel">优先级</span><span class="seg" id="priority-seg"></span></span>
+          <button class="mini" id="btn-note" title="给节点写备注（Markdown 里是 <!-- 备注 -->）">备注 ≡</button>
+          <button class="mini" id="btn-collapse" title="折叠 / 展开（Ctrl+/）">折叠</button>
+        </div>
+        <div class="howto help-kbd"><b>键盘：</b>Enter 同级 · Tab 子级 · Shift+Tab 升级 · 空格 / F2 编辑 · Delete 删除 · 方向键移动 · Ctrl+↑/↓ 调顺序 · Ctrl+/ 折叠 · Ctrl+Z / Y 撤销重做 · Ctrl+F 查找 · <b>H 看全部键位</b></div>
+        <div class="howto help-touch-text"><b>触屏：</b>点节点选中，双击编辑，拖节点到另一个节点上换父级；单指拖空白处平移，双指缩放；下方大按钮建同级 / 子级。</div>
+      </div>
+      <div id="dock-practice" class="dockpane">
+        <div class="tasks-head"><b>练习任务</b><span id="task-progress">0 / 0</span>
+          <button class="mini" id="task-reset" title="重新开始练习（清空打勾，换一张空白导图）">重新开始</button></div>
+        <ol id="tasks"></ol>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== 右栏：大纲 / 统计 / Markdown 源 ===================== -->
+  <section id="rightcol">
+    <div class="tabs" role="tablist">
+      <button data-rtab="outline" class="on">大纲</button>
+      <button data-rtab="stats">统计</button>
+      <button data-rtab="source">Markdown 源</button>
+      <span class="spacer"></span>
+      <span class="hint" id="rtab-hint"></span>
+    </div>
+    <div class="rpane on" id="rpane-outline"><div id="outline" title="点一行就选中对应节点"></div></div>
+    <div class="rpane" id="rpane-stats">
+      <div class="statgrid">
+        <div class="stat"><b id="st-nodes">0</b><span>节点数</span></div>
+        <div class="stat"><b id="st-depth">0</b><span>最大深度</span></div>
+        <div class="stat"><b id="st-leaves">0</b><span>叶子节点</span></div>
+        <div class="stat"><b id="st-notes">0</b><span>带备注</span></div>
+      </div>
+      <h4>每层节点数</h4>
+      <div id="st-levels"></div>
+      <p class="note">节点数、深度和每层数量都从当前这棵树实时统计；根节点算第 1 层。</p>
+    </div>
+    <div class="rpane" id="rpane-source"><pre id="md-source"></pre></div>
+  </section>
+</main>
+
+<footer id="footer"></footer>
+
+<!-- 手机竖屏：全屏面板的「返回」；横屏时的提示 -->
+<button id="sheet-close" type="button" hidden>← 返回</button>
+<div id="rotate-hint" role="status"><div><b>竖屏体验更佳</b>把手机竖过来：上面是图，下面是大按钮。<br>
+  <button id="rot-ok" type="button">仍然横屏继续</button></div></div>
+
+<!-- ===================== 对话框 ===================== -->
+<div class="dlg-mask" id="dlg-confirm">
+  <div class="dlg">
+    <h3 id="confirm-title">删除节点</h3>
+    <p id="confirm-text"></p>
+    <div class="dlg-btns">
+      <button class="mini" id="confirm-no">取消</button>
+      <button class="mini danger" id="confirm-yes">删除</button>
+    </div>
+  </div>
+</div>
+
+<div class="dlg-mask" id="dlg-note">
+  <div class="dlg">
+    <h3>节点备注 <span class="sub" id="note-for"></span></h3>
+    <textarea id="note-text" rows="5" placeholder="写点什么……在 Markdown 里会变成 <!-- 备注 -->"></textarea>
+    <div class="dlg-btns">
+      <button class="mini" id="note-cancel">取消</button>
+      <button class="mini primary" id="note-ok">保存</button>
+    </div>
+  </div>
+</div>
+
+<div class="dlg-mask" id="dlg-prompt">
+  <div class="dlg">
+    <h3 id="prompt-title">改名</h3>
+    <input type="text" id="prompt-input">
+    <div class="dlg-btns">
+      <button class="mini" id="prompt-cancel">取消</button>
+      <button class="mini primary" id="prompt-ok">确定</button>
+    </div>
+  </div>
+</div>
+
+<div class="dlg-mask" id="dlg-help">
+  <div class="dlg help">
+    <h3>操作说明 <span class="sub">（随时按 H 或右上角 “?” 再打开）</span></h3>
+    <div class="helpbody">
+    <div class="helpgrid">
+      <div>
+        <h4>这是什么</h4>
+        <p>一个<b>键盘优先</b>的思维导图：像 XMind 一样<b>回车建同级、Tab 建子级</b>，几分钟画出一棵树。左边的 Markdown 文本框和右边的图<b>实时互转</b>：改文字图跟着变，改图文字跟着变。全部在浏览器里完成，不联网，自动保存在本机。</p>
+        <h4>三个模式（页面顶部）</h4>
+        <ul>
+          <li><b>观看</b>：示例地图自动逐层展开，每一步配解说（这门课的知识树 / 论文写作结构 / 一周计划）。</li>
+          <li><b>我来画</b>：自己画。工具条里有布局（左右平衡 / 向右树状 / 大纲）、连线、配色、打开 / 下载文件、导出 PNG / SVG。</li>
+          <li><b>练习</b>：按任务清单一步步做，完成一项自动打勾。</li>
+        </ul>
+        <h4>Markdown 怎么写</h4>
+        <pre class="mdex"># 中心主题
+## 分支（## 是第二层）
+- 子节点（缩进两格再深一层）
+  - 孙节点
+&lt;!-- 紧跟在节点后面的注释 = 备注 --&gt;</pre>
+        <p>节点文字支持 <code>**粗体**</code>、<code>`代码`</code>、<code>[文字](网址)</code>。也能打开 FreeMind .mm 和 OPML 文件。</p>
+      </div>
+      <div>
+        <div class="help-kbd">
+          <h4>键位表</h4>
+          <table class="kbd">
+            <tr><td><kbd>Enter</kbd></td><td>新建同级（根节点上 = 新建子级）</td></tr>
+            <tr><td><kbd>Tab</kbd></td><td>新建子级</td></tr>
+            <tr><td><kbd>Shift</kbd>+<kbd>Tab</kbd></td><td>升一级</td></tr>
+            <tr><td><kbd>空格</kbd> / <kbd>F2</kbd></td><td>编辑文字（编辑中 <kbd>Enter</kbd> 确认、<kbd>Esc</kbd> 取消、<kbd>Tab</kbd> 确认并建子级）</td></tr>
+            <tr><td><kbd>Delete</kbd> / <kbd>Backspace</kbd></td><td>删除（带子树会先确认）</td></tr>
+            <tr><td><kbd>↑</kbd> <kbd>↓</kbd> <kbd>←</kbd> <kbd>→</kbd></td><td>在树上移动选中</td></tr>
+            <tr><td><kbd>Ctrl</kbd>+<kbd>Enter</kbd></td><td>在上方插入同级</td></tr>
+            <tr><td><kbd>Ctrl</kbd>+<kbd>↑</kbd> / <kbd>↓</kbd></td><td>调整同级顺序</td></tr>
+            <tr><td><kbd>Ctrl</kbd>+<kbd>/</kbd></td><td>折叠 / 展开（折叠后显示子节点数）</td></tr>
+            <tr><td><kbd>Ctrl</kbd>+<kbd>Z</kbd> / <kbd>Y</kbd></td><td>撤销 / 重做</td></tr>
+            <tr><td><kbd>Ctrl</kbd>+<kbd>F</kbd></td><td>查找节点</td></tr>
+            <tr><td><kbd>Ctrl</kbd>+<kbd>0</kbd> / <kbd>M</kbd></td><td>适应窗口 / 显示收起 Markdown</td></tr>
+            <tr><td><kbd>Home</kbd> · <kbd>Esc</kbd> · <kbd>H</kbd></td><td>回到根节点 · 取消 · 本说明</td></tr>
+          </table>
+          <p>鼠标：滚轮缩放，空白处拖动平移，<b>拖节点到另一个节点上</b>换父级（目标会高亮），双击编辑。</p>
+        </div>
+        <div class="help-touch">
+          <h4>触屏操作</h4>
+          <svg viewBox="0 0 360 250" role="img" aria-label="触屏操作图解：上方的图单指拖动平移、双指缩放，点节点选中、双击编辑，拖节点到另一个节点上换父级；下方一排大按钮：同级、子级、升级、编辑、删除、撤销">
+            <rect x="8" y="6" width="344" height="160" rx="8" class="ht-canvas"/>
+            <rect x="130" y="68" width="100" height="34" rx="10" class="ht-root"/><text x="180" y="90" class="ht-rt">中心主题</text>
+            <path d="M230 85 C 260 85, 260 45, 282 45" class="ht-edge"/><rect x="282" y="32" width="60" height="26" rx="7" class="ht-node"/><text x="312" y="49" class="ht-nt">分支 1</text>
+            <path d="M230 85 C 260 85, 260 125, 282 125" class="ht-edge"/><rect x="282" y="112" width="60" height="26" rx="7" class="ht-node on"/><text x="312" y="129" class="ht-nt">分支 2</text>
+            <path d="M130 85 C 100 85, 100 85, 76 85" class="ht-edge"/><rect x="16" y="72" width="60" height="26" rx="7" class="ht-node"/><text x="46" y="89" class="ht-nt">分支 3</text>
+            <circle cx="312" cy="125" r="13" class="ht-finger"/>
+            <path d="M300 140 L 60 110" class="ht-drag" marker-end="url(#ht-arrow)"/>
+            <defs><marker id="ht-arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0 L10 5 L0 10 z" class="ht-arrowhead"/></marker></defs>
+            <text x="180" y="24" class="ht-label">① 点节点选中，双击编辑；拖节点到另一个节点上 = 换父级</text>
+            <text x="180" y="158" class="ht-label">② 单指拖空白处平移，双指缩放</text>
+            <g class="ht-tools">
+              <rect x="8" y="178" width="52" height="44" rx="8"/><text x="34" y="206">同级</text>
+              <rect x="66" y="178" width="52" height="44" rx="8" class="on"/><text x="92" y="206">子级</text>
+              <rect x="124" y="178" width="52" height="44" rx="8"/><text x="150" y="206">升级</text>
+              <rect x="182" y="178" width="52" height="44" rx="8"/><text x="208" y="206">编辑</text>
+              <rect x="240" y="178" width="52" height="44" rx="8"/><text x="266" y="206">删除</text>
+              <rect x="298" y="178" width="54" height="44" rx="8"/><text x="325" y="206">撤销</text>
+            </g>
+            <text x="8" y="242" class="ht-label2">③ 底部大按钮代替 Enter / Tab：同级、子级、升级、编辑、删除、撤销</text>
+          </svg>
+          <p><b>手机 / 平板</b>：上面是图，下面一排大按钮；「编辑」时输入框出现在键盘上方。右上角 ☰ 里有「看 Markdown」（全屏改文字）、「大纲 · 统计」、打开 / 下载 / 导出和退出。</p>
+        </div>
+        <h4>关于离线</h4>
+        <p>纯静态网页：不联网、不上传任何内容；导图自动保存在<b>本机浏览器</b>里（localStorage），换电脑要先「下载 .md / .json」。关掉标签页就全部结束。</p>
+      </div>
+    </div>
+    </div>
+    <div class="dlg-btns help-btns"><button class="mini primary" id="help-close">开始</button></div>
+  </div>
+</div>
+
+<div id="ended"><div><h2>已停止运行</h2><p>所有计算都已结束，可以直接关闭这个标签页。</p></div></div>
+
+<input type="file" id="file-open" accept=".md,.markdown,.txt,.json,.opml,.mm,.xml" hidden>
+
+<div id="toast"></div>
+<pre id="selftest" hidden></pre>
+
+<script src="js/config.js"></script>
+<script src="js/credits.js"></script>
+<script src="js/model.js"></script>
+<script src="js/markdown.js"></script>
+<script src="js/formats.js"></script>
+<script src="js/layout.js"></script>
+<script src="js/samples.js"></script>
+<script src="js/store.js"></script>
+<script src="js/canvas.js"></script>
+<script src="js/mobile.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>

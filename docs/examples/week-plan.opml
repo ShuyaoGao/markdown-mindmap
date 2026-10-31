@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<opml version="2.0">
+  <head><title>本周计划</title></head>
+  <body>
+    <outline text="本周计划">
+      <outline text="周一">
+        <outline text="整理上周笔记"/>
+        <outline text="读两篇论文"/>
+      </outline>
+      <outline text="周二">
+        <outline text="写代码：数据清洗"/>
+        <outline text="运动 30 分钟"/>
+      </outline>
+      <outline text="周三">
+        <outline text="组会汇报"/>
+        <outline text="改实验脚本"/>
+      </outline>
+      <outline text="周四">
+        <outline text="跑实验"/>
+        <outline text="写结果小结"/>
+      </outline>
+      <outline text="周五">
+        <outline text="复盘本周"/>
+        <outline text="规划下周"/>
+      </outline>
+      <outline text="周末">
+        <outline text="休息"/>
+        <outline text="读一本闲书"/>
+      </outline>
+    </outline>
+  </body>
+</opml>

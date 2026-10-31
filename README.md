@@ -1,0 +1,185 @@
+> **AI 教学演示案例 / AI Teaching Demos** 系列
+
+# 键盘思维导图（Markdown Mindmap）
+
+**回车建同级、Tab 建子级，几分钟画出一棵树；左边 Markdown、右边图，实时互转。**
+
+**Shuyao Gao**（gaoshuyao.mk@gmail.com）· aSSIST University (Seoul School of Integrated Sciences and Technologies) · 서울과학종합대학원대학교
+代码 MIT · 文档与教学素材 CC BY 4.0
+
+一个零安装的浏览器端思维导图编辑器，键盘优先：像 XMind 那样 **Enter / Tab 就能快速建节点**，也能直接用 **Markdown** 写（`#` 标题层级 + `- ` 列表，两种都认），文字和图**双向实时同步**。三种布局（根节点居中左右平衡 / 向右树状 / 大纲）、自动排版不重叠、拖节点换父级、折叠显示子节点数、4 套配色按层级自动着色、深色模式跟随系统。导图自动保存在本机浏览器里，可下载 .md / .json，能打开 **FreeMind .mm** 和 **OPML**，导出 PNG / SVG。电脑和手机都能用，不需要安装、不需要联网，纯手写 JavaScript，不依赖任何库。
+
+**English summary.** *Markdown Mindmap* is a browser-only, keyboard-first mind-map editor for teaching: Enter / Tab create siblings and children, a Markdown pane and the SVG map stay in two-way sync, three auto layouts (balanced, right-hand tree, outline) never overlap, nodes can be dragged onto a new parent, and maps round-trip through Markdown, JSON, OPML and FreeMind `.mm`. Works on desktop and phones (portrait layout with big buttons instead of Enter / Tab), from GitHub Pages or from `file://` after a double-click. Hand-written JavaScript, no libraries, no network. UI and documentation are in Chinese.
+
+![观看：示例地图「这门课的知识树」逐层展开，下方解说，右栏大纲](docs/img/01-watch-1920x1080.png)
+
+## 怎么打开：不用安装任何东西
+
+- **手机**：点在线链接 <https://shuyaogao.github.io/markdown-mindmap/>（GitHub Pages，打开就能用；竖屏体验最好）。
+- **电脑**：点同一个在线链接 <https://shuyaogao.github.io/markdown-mindmap/>；或者在 [Releases](https://github.com/ShuyaoGao/markdown-mindmap/releases) 下载 `markdown-mindmap-v1.0.zip`，解压后双击 **`index.html`**；或者点 **Code → Download ZIP**，解压后双击 **`play/index.html`**。
+
+不需要 Python，不需要联网：页面是纯 HTML + JS，Windows 用系统自带的 Edge、Mac 用 Safari 打开即可（Safari 需要在真实 Mac 上确认，见“常见问题”）。
+
+## 怎么用
+
+### 电脑（键鼠）
+
+页面顶部三个模式标签：
+
+| 模式 | 你看到什么 | 你能做什么 |
+|---|---|---|
+| **观看**（默认） | 示例地图自动逐层展开（21 步），每展开一个节点配一句解说；三张内置示例：这门课的知识树、论文写作结构、一周计划 | 暂停、单步、从头；四档速度：逐条讲解 / 正常 / 快速 / 瞬间；顶部「示例」换一张 |
+| **我来画** | 左边 Markdown 文本框、右边图（可收起文本框），上面是工具条 | 键盘建图；布局 / 连线 / 配色；节点颜色、图标、优先级、备注；新建 / 改名 / 删除本机保存的导图；打开 .md / .json / .opml / .mm；下载 .md / .json / .opml / .mm；导出 PNG / SVG |
+| **练习** | 7 项任务清单，完成一项自动打勾 | 建 10 个节点 → 改 3 个节点文字 → 把一段 Markdown 变成图 → 拖一个分支换父级 → 折叠 → 撤销重做 → 下载 |
+
+**键位**（第一次打开会弹出键位表，之后按 H 或右上角 “?”）：
+
+| 键 | 作用 |
+|---|---|
+| `Enter` / `Tab` / `Shift+Tab` | 新建同级 / 新建子级 / 升一级 |
+| `空格` / `F2` · `Esc` | 编辑文字（编辑中 `Enter` 确认、`Tab` 确认并建子级）· 取消 |
+| `Delete` / `Backspace` | 删除（带子树会先确认） |
+| `↑ ↓ ← →` · `Home` | 在树上移动选中 · 回到根 |
+| `Ctrl+Enter` · `Ctrl+↑/↓` | 在上方插入同级 · 调整同级顺序 |
+| `Ctrl+/` · `Ctrl+F` | 折叠 / 展开（折叠后显示子节点数）· 查找 |
+| `Ctrl+Z` / `Ctrl+Y` · `Ctrl+0` · `Ctrl+M` | 撤销 / 重做 · 适应窗口 · 显示 / 收起 Markdown |
+
+鼠标：滚轮缩放，空白处拖动平移，**拖节点到另一个节点上**换父级（目标会高亮），双击编辑，点折叠角标展开。
+
+**Markdown 怎么写**（改文字图跟着变，改图文字跟着变，光标跟着选中的节点走）：
+
+```markdown
+# 中心主题
+## 分支（## 是第二层）
+- 子节点（缩进两格再深一层；4 空格或 Tab 也认）
+  - 孙节点
+<!-- 紧跟在节点后面的 HTML 注释 = 这个节点的备注 -->
+```
+
+节点文字支持 `**粗体**`、`` `代码` ``、`[文字](网址)`。全用 `#` 标题或全用 `- ` 列表都可以；从图改回文字时，程序沿用你原来用了几层标题。
+
+右栏三个标签：**大纲**（点一行选中节点，点三角折叠）、**统计**（节点数、最大深度、叶子数、每层数量）、**Markdown 源**。右上角「大屏模式」把左右比例从约 55:45 调到约 70:30，方便投影；「退出」停下所有计时器并尝试关闭页面。
+
+![我来画：论文写作结构，左边 Markdown、右边图，下方节点属性，右栏大纲](docs/img/02-draw-1920x1080.png)
+
+### 手机（触屏）
+
+竖屏打开。头部只有标题、三个模式标签和 ☰ 菜单（看 Markdown、大纲 · 统计、新建、打开、下载、导出、操作说明、退出都在菜单里）。
+
+- **观看**：图贴顶、按屏幕宽度缩放，下面是播放控制和解说，再往下滑是右栏（大纲 / 统计 / 源）。
+- **我来画 / 练习**：一屏显示，整页不滚动。上方是图：**点节点选中，双击编辑，拖节点到另一个节点上换父级；单指拖空白处平移，双指缩放**。中间是节点属性（颜色、图标、优先级、备注、折叠）。底部一排大按钮 **「同级 / 子级 / 升级 / 编辑 / 删除 / 撤销」** 代替 Enter / Tab，触控区都不小于 44px；「编辑」时输入框出现在键盘上方。
+- **看 Markdown**（☰ 里）：全屏文本框，改完点「返回」，图已经跟着变了。
+- 横屏时会提示“竖屏体验更佳”，也可以点“仍然横屏继续”。
+- 首次打开的操作说明在触屏设备上显示触屏操作图解，不显示键位表。
+
+<img src="docs/img/04-mobile-draw-390x844.png" alt="手机竖屏（390×844）「我来画」：上方是图，刚用底部大按钮建了 10 个节点并拖动了一个分支；下方是属性条和六个大按钮" width="300">
+
+## 课堂上怎么用（推荐顺序，约 15 分钟）
+
+1. **观看**（3 分钟）：放「这门课的知识树」，逐条讲解速度，边展开边说每个板块是什么。
+2. **现场画**（5 分钟）：切到「我来画 → 新建」，投影上只用键盘：Tab、打字、Enter、打字……两分钟画出今天这节课的结构；按 Ctrl+M 把 Markdown 文本框亮出来，让同学看到图和文字是同一个东西。
+3. **同学自己画**（5 分钟）：手机打开同一个链接，用底部大按钮画自己的笔记树；「下载 .md」交作业，或者直接把 Markdown 复制到笔记软件里。
+4. **迁移**（2 分钟）：演示打开 `docs/examples/` 里的 `.mm` / `.opml`：别的工具画的图也能进来。
+
+## 它是怎么做的
+
+```
+键盘 / 大按钮 / 拖拽 ──> Model.Tree（增删改移、折叠）──> Layout.compute（三种布局）──> Canvas（SVG 绘制、缩放平移、导出）
+                            │  ▲
+Markdown 文本框 ──parse──────┘  └──serialize──> 文本框 / 右栏「Markdown 源」
+JSON / OPML / FreeMind ──Formats──> Model.Tree ──> …
+```
+
+- **树模型**（`play/js/model.js`）：节点 `{text, children, note, collapsed, color, icon, priority}`；每次改动前存一份带 id 的快照，撤销 / 重做就是换快照（上限 200 步）。
+- **Markdown ↔ 树**（`play/js/markdown.js`）：`#` 的个数是层级，列表项的层级 = 上一个标题的层级 + 1 + 缩进级数（缩进单位自动识别：Tab、2 空格或 4 空格），标准大纲算法建树；紧跟节点的 `<!-- -->` 是备注。图改回文字时，程序沿用原来的标题层数；文字改回图时，按“同一父节点下先按文字、再按位置”把颜色、图标、折叠状态和节点 id 搬到新树上，所以边打字边看图，选中和颜色都不会丢。
+- **排版**（`play/js/layout.js`）：每个子树的块高 = 子块高之和，节点在自己的块里垂直居中，所以按构造就不会重叠；左右平衡布局把根的前一半分支放右边、后一半放左边。文字用 canvas `measureText` 量宽度折行（中文逐字、英文按词）。
+- **格式**（`play/js/formats.js`）：OPML 和 FreeMind 都是简单 XML，用自己写的小解析器读（元素、属性、CDATA、实体、注释），不依赖 DOMParser，所以 Node 里也能测。不做 .xmind（zip + 私有 schema）。
+- **画布**（`play/js/canvas.js`）：SVG；Pointer Events 统一鼠标 / 手指 / 触控笔；两根手指进入双指缩放；拖节点时克隆一个半透明影子，`elementFromPoint` 找落点并高亮；导出时重画一份不带选中框的 SVG，转成 Image 再画到 canvas 得到 PNG。
+
+**实测数字**（全部来自 `results/result.json`，由 `python -m tools.browser_check` 在 Microsoft Edge 155.0.4283.45 无头模式下跑页面自检生成）：
+
+- 三张示例（21 / 22 / 19 个节点）× 三种布局 = 9 种排版，重叠节点对 0 个。
+- 用模拟按键 Tab × 5、Enter × 5 各打一个字再确认：节点数恰好 +10；Shift+Tab 后深度减 1；再建一个节点后 Ctrl+Z × 2 回到原来的节点数、Ctrl+Y × 2 连文字一起恢复。
+- 文本框写入 7 行 Markdown → 树结构和备注正确；在图上建一个节点 → 文本框里多出对应的一行。
+- 拖节点换父级成功；把节点拖到自己的后代上被拒绝。
+- 导出 PNG 1020×457，其中有颜色的像素 34,421 个（不是空图）。
+
+![练习：7 项任务清单，1366×768](docs/img/03-practice-1366x768.png)
+
+**手机 / 电脑尺寸验收**（来自 `results/mobile_check.json`，由 `python -m tools.mobile_check_mindmap` 用 Microsoft Edge 156.0.4314.50 通过 DevTools 协议模拟设备生成）：
+6 个尺寸全部通过（6 / 6）——触屏竖屏 390×844（DPR 3）、414×896（DPR 3）、360×780（DPR 3）、768×1024（DPR 2），电脑 1920×1080、1366×768。每个尺寸检查：没有横向溢出；「我来画」「练习」整页不滚动；用模拟触摸点底部大按钮（电脑用 Enter / Tab）建出 10 个带文字的节点；用模拟触摸（或鼠标）把一个节点拖到另一个节点上后父节点改变；在 Markdown 框（手机是「看 Markdown」全屏面板）里加一行后图里出现新节点；导出 PNG 有内容；右栏面板、☰ 菜单和操作说明能打开和关闭；没有 JS 报错。
+
+## 想自己修改或验证
+
+`play/` 是纯 HTML + JS，没有编译步骤，改完直接刷新页面。
+
+```bash
+pip install pytest                    # 只有测试需要
+python -m pytest -q                   # 静态检查（file:// 规则、无第三方库、署名）+ Node 单元测试（需要 Node.js）+ result.json / mobile_check.json 检查
+node tests/js/unit_tests.js           # 只跑 Node 单元测试：树模型、撤销重做、Markdown ↔ 树 ↔ JSON 往返、OPML / .mm 解析、三种布局不重叠
+RUN_BROWSER=1 python -m pytest -q     # 另外用本机 Edge 无头跑页面自检（1920×1080 与 1366×768）和六个尺寸的验收
+python -m tools.browser_check --shots docs/img   # 重新生成 results/result.json 和电脑截图
+python -m tools.mobile_check_mindmap             # 重新生成 results/mobile_check.json 和手机截图（需要 pip install playwright 和本机 Edge）
+python -m tools.build --release       # 重新生成 play/js/credits.js、docs/examples/ 和 release/*.zip
+python -m tools.fill_credits          # 改了 credits.json（署名 / 仓库名）后，一次替换 README 等文件里的全部占位
+```
+
+页面自检也可以手动看：打开 `play/index.html?selftest=1`，几秒后标签页标题变成 `SELFTEST PASS`。
+`docs/examples/` 里是三张示例地图的 `.md` / `.json` / `.opml` / `.mm` 文件，可以在「我来画 → 打开文件」里直接打开，也可以拿去 FreeMind / Freeplane 或任何支持 OPML 的大纲工具里试。
+
+## 目录结构
+
+```
+index.html             根目录入口：跳到 play/index.html（Pages 和解压后双击都从这里进）
+.nojekyll              让 GitHub Pages 原样发布文件，不经过 Jekyll
+play/                  双击即用的静态页面（Release zip = index.html + play/）
+  index.html
+  css/app.css          电脑两栏布局、深色模式；css/mobile.css 手机竖屏布局（body.touchp）
+  js/config.js         名称、4 套配色、布局参数（改名只改这里）
+  js/credits.js        署名（由 credits.json 生成）
+  js/model.js          树模型 + 撤销重做（纯函数，Node 可测）
+  js/markdown.js       Markdown ↔ 树、行内格式、属性合并
+  js/formats.js        JSON / OPML / FreeMind 导入导出，自写小 XML 解析器
+  js/layout.js         三种自动布局、文字折行、重叠检查
+  js/samples.js        三张示例地图与解说
+  js/store.js          localStorage 多文档保存
+  js/canvas.js         SVG 绘制、缩放平移、双指、拖节点换父、导出 SVG / PNG
+  js/mobile.js         手机竖屏通用件（设备分类、☰ 菜单、全屏面板、横屏提示、防误触）
+  js/app.js            页面外壳：三个模式、键盘、同步、右栏、练习、说明、退出、自检
+tests/                 pytest + Node 单元测试
+tools/                 构建、无头浏览器自检与截图、六尺寸验收（mobile_check.py 是公用的设备模拟 / Edge 锁）、占位替换
+results/result.json    页面自检的结果；results/mobile_check.json 六个尺寸的验收结果（README 里的数字都来自这两个文件）
+docs/img/              截图；docs/examples/ 示例地图的 .md / .json / .opml / .mm
+credits.json           署名、联系邮箱、系列名、仓库名
+```
+
+## 常见问题
+
+- **关掉页面后还有程序在跑吗？** 没有。离线版是纯静态网页，关掉标签页就全部结束，不留后台进程；右上角“退出”（手机在 ☰ 里）会先停下所有计时器再尝试关闭页面。
+- **我的导图存在哪里？** 本机浏览器的 localStorage（最多 50 张，按最近修改排序）。换电脑、换浏览器或清除站点数据都看不到，重要的请「下载 .md / .json」。不会上传任何内容。
+- **Markdown 里颜色、图标去哪了？** Markdown 只记文字、层级和备注；颜色、图标、优先级在 JSON 里。边改文字边看图时属性不会丢（程序按文字和位置把属性搬过去），但下载 .md 再打开就只剩文字和结构。
+- **能打开 XMind 文件吗？** 不能（.xmind 是 zip + 私有格式）。从 XMind 导出 Markdown 或 OPML 再打开即可；FreeMind / Freeplane 的 .mm 直接打开。
+- **Mac 和 iPhone 上能用吗？** 页面只用标准 Web 接口，但目前只在 Windows 的 Edge（Chromium 内核）上自动测试过，手机尺寸也是用它模拟的；Safari（Mac / iPhone）和 Firefox **未测**，需要在真机上确认一次。
+- **字体换了电脑看起来不一样？** 页面只用系统字体（不随包分发字体），不同系统的字形不同，节点宽度会略有差别，排版规则保证在任何字体下都不重叠。
+
+## 许可证与引用
+
+代码 MIT（[LICENSE](LICENSE)），文档与教学素材（README、docs/、页面文字、截图）CC BY 4.0（[LICENSE-docs](LICENSE-docs)），使用请注明出处。
+引用信息见 [CITATION.cff](CITATION.cff)（GitHub 右侧的 “Cite this repository”）。第三方说明见 [THIRD_PARTY.md](THIRD_PARTY.md)。联系作者：gaoshuyao.mk@gmail.com。
+本项目与任何商业思维导图软件及其厂商没有关联。
+
+## AI 辅助开发声明
+
+代码由 Claude Code 辅助编写，经作者审阅。
+
+## English summary
+
+**Markdown Mindmap** is a browser-only teaching demo (AI Teaching Demos) by Shuyao Gao (gaoshuyao.mk@gmail.com), aSSIST University (Seoul School of Integrated Sciences and Technologies). It is a
+keyboard-first mind-map editor: Enter / Tab create sibling and child nodes, Shift+Tab outdents, arrows navigate, Ctrl+Z / Y undo and
+redo, Ctrl+/ collapses (showing the hidden count), Ctrl+F finds. A Markdown pane (`#` headings and `- ` lists, `<!-- -->` notes,
+inline bold / code / links) and the SVG map stay in two-way sync with the cursor following the selected node. Three automatic
+layouts (balanced left/right, right-hand tree, outline) are overlap-free by construction; nodes can be dragged onto a new parent;
+four colour themes colour nodes by level; dark mode follows the system. Maps auto-save in localStorage, download as .md / .json /
+.opml / .mm, import FreeMind .mm and OPML, and export PNG / SVG. On phones (portrait) big buttons replace Enter / Tab, the Markdown
+pane becomes a full-screen sheet, and the editor fits one screen. Hand-written JavaScript, no libraries, no network. Open it on
+GitHub Pages, or double-click `index.html` from the release zip. Code: MIT; docs: CC BY 4.0.

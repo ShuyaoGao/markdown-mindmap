@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<opml version="2.0">
+  <head><title>一篇论文的结构</title></head>
+  <body>
+    <outline text="一篇论文的结构">
+      <outline text="标题与摘要">
+        <outline text="标题：一句话说清贡献"/>
+        <outline text="摘要：背景、方法、结果、意义" _note="四句话，每句一个要素"/>
+      </outline>
+      <outline text="引言">
+        <outline text="问题是什么"/>
+        <outline text="为什么重要"/>
+        <outline text="已有工作差在哪"/>
+        <outline text="本文做了什么"/>
+      </outline>
+      <outline text="方法">
+        <outline text="数据从哪来"/>
+        <outline text="模型或算法"/>
+        <outline text="实验怎么设置"/>
+      </outline>
+      <outline text="结果">
+        <outline text="主实验表"/>
+        <outline text="消融实验"/>
+        <outline text="每张图要能单独看懂"/>
+      </outline>
+      <outline text="讨论与结论">
+        <outline text="结果说明了什么"/>
+        <outline text="局限在哪"/>
+        <outline text="下一步做什么"/>
+      </outline>
+      <outline text="参考文献"/>
+    </outline>
+  </body>
+</opml>
